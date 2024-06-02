@@ -35,7 +35,7 @@
                             <td>{{ $product->quantity }}</td>
                             <td>{{ $product->price }}</td>
                             <td>
-                                <form action="{{ route('products.destroy', $product->id) }}" method="post">
+                                <form action="{{ route('products.destroy', $product->id) }}" method="post" id="delete-form-{{ $product->id }}">
                                     @csrf
                                     @method('DELETE')
 
@@ -43,7 +43,7 @@
 
                                     <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i> Edit</a>   
 
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this product?');"><i class="bi bi-trash"></i> Delete</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $product->id }})"><i class="bi bi-trash"></i> Delete</button>
                                 </form>
                             </td>
                         </tr>
@@ -63,5 +63,15 @@
         </div>
     </div>    
 </div>
+
+<script>
+function confirmDelete(productId) {
+    const confirmed = confirm('Do you want to delete this product?');
+    if (confirmed) {
+        const form = document.getElementById(`delete-form-${productId}`);
+        form.submit();
+    }
+}
+</script>
     
 @endsection
