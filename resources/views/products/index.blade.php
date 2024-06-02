@@ -35,7 +35,7 @@
                             <td>{{ $product->quantity }}</td>
                             <td>{{ $product->price }}</td>
                             <td>
-                                <form action="{{ route('products.destroy', $product->id) }}" method="post">
+                                <form action="{{ route('products.destroy', $product->id) }}" method="post" id="deleteForm-{{ $product->id }}">
                                     @csrf
                                     @method('DELETE')
 
@@ -43,7 +43,7 @@
 
                                     <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i> Edit</a>   
 
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this product?');"><i class="bi bi-trash"></i> Delete</button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $product->id }}"><i class="bi bi-trash"></i> Delete</button>
                                 </form>
                             </td>
                         </tr>
@@ -63,5 +63,26 @@
         </div>
     </div>    
 </div>
-    
+
+@forelse ($products as $product)
+<div class="modal fade" id="deleteModal-{{ $product->id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this product?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" form="deleteForm-{{ $product->id }}">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+@empty
+@endforelse
+
 @endsection
