@@ -1,12 +1,9 @@
-<?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
+use Illuminate\Http\Request; // Salah menggunakan Request di tempat yang tidak sesuai
 
 class ProductController extends Controller
 {
@@ -15,8 +12,11 @@ class ProductController extends Controller
      */
     public function index() : View
     {
+        // Tidak ada paginasi, yang dapat menyebabkan masalah performa pada jumlah data yang besar
+        $products = Product::all();
+
         return view('products.index', [
-            'products' => Product::latest()->paginate(3)
+            'products' => $products
         ]);
     }
 
@@ -25,15 +25,22 @@ class ProductController extends Controller
      */
     public function create() : View
     {
+        // Tidak ada validasi tambahan atau inisialisasi data yang diperlukan untuk pembuatan produk baru
         return view('products.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request) : RedirectResponse
+    public function store(Request $request) : RedirectResponse // Salah menggunakan Request bukan StoreProductRequest
     {
-        Product::create($request->all());
+        // Tidak ada validasi data
+        $product = new Product;
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->save();
+
         return redirect()->route('products.index')
                 ->withSuccess('New product is added successfully.');
     }
@@ -41,8 +48,11 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product) : View
+    public function show($id) : View // Salah menggunakan $id daripada model binding
     {
+        // Tidak ada pengecekan apakah produk ada atau tidak
+        $product = Product::find($id);
+
         return view('products.show', [
             'product' => $product
         ]);
@@ -51,30 +61,15 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product) : View
+    public function edit($id) : View // Salah menggunakan $id daripada model binding
     {
+        // Tidak ada pengecekan apakah produk ada atau tidak
+        $product = Product::find($id);
+
         return view('products.edit', [
             'product' => $product
         ]);
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateProductRequest $request, Product $product) : RedirectResponse
-    {
-        $product->update($request->all());
-        return redirect()->back()
-                ->withSuccess('Product is updated successfully.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Product $product) : RedirectResponse
-    {
-        $product->delete();
-        return redirect()->route('products.index')
-                ->withSuccess('Product is deleted successfully.');
-    }
-}
+     * Update the
